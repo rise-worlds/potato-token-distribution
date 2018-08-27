@@ -14,7 +14,7 @@ let calldata   = (sig, ...words) => hexcat(sig, ...words.map(word))
 let toAsync    = promise => $ => promise.then(x => $(null, x), $)
 var byId       = id          => document.getElementById(id)
 var formatWad  = wad         => String(wad).replace(/\..*/, "")
-var formatEOS  = wad         => wad ? wad.toFormat(4) : "0"
+var formatPOTATO  = wad      => wad ? wad.toFormat(4) : "0"
 var formatETH  = wad         => wad ? wad.toFormat(2) : "0"
 var getValue   = id          => byId(id).value
 var show       = id          => byId(id).classList.remove("hidden")

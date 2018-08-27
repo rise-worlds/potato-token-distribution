@@ -1,8 +1,8 @@
-let EOS_SALE        = "0xd0a6e6c54dbc68db5db3a091b171a77407ff7ccf"
-let EOS_SALE_UTIL   = "0x860fd485f533b0348e413e65151f7ee993f93c02"
-let EOS_TOKEN       = "0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0"
+let POTATO_SALE        = "0xd0a6e6c54dbc68db5db3a091b171a77407ff7ccf"
+let POTATO_SALE_UTIL   = "0x860fd485f533b0348e413e65151f7ee993f93c02"
+let POTATO_TOKEN       = "0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0"
 
-let eos_sale, eos_token
+let potato_sale, potato_token
 
 let startTime       = 1498914000
 let startMoment     = moment(startTime * 1000)
@@ -27,31 +27,31 @@ let balanceOf = async (token, address) => web3.toBigNumber(hex(await call({
 })))
 
 let getDailyTotals = async () => words32(await call({
-  to: EOS_SALE_UTIL, data: sighash("dailyTotals()"),
+  to: POTATO_SALE_UTIL, data: sighash("dailyTotals()"),
 })).map(web3.toBigNumber)
 
 let getUserBuys = async address => words32(await call({
-  to: EOS_SALE_UTIL, data: calldata(sighash("userBuys()"), address),
+  to: POTATO_SALE_UTIL, data: calldata(sighash("userBuys()"), address),
 })).map(web3.toBigNumber)
 
 let getUserClaims = async address => words32(await call({
-  to: EOS_SALE_UTIL, data: calldata(sighash("userClaims()"), address),
+  to: POTATO_SALE_UTIL, data: calldata(sighash("userClaims()"), address),
 })).map(Number).map(Boolean)
 
 let getKey = async address => bytes(
   words32(await call({
-    to: EOS_SALE, data: calldata(sighash("keys(address)"))
+    to: POTATO_SALE, data: calldata(sighash("keys(address)"))
   })).slice(2).map(unhex).join("").replace(/(00)*$/, "")
 ).map(Number).map(String.fromCharCode).join("")
 
-addEventListener("mousemove", event => eos_ecc.key_utils.addEntropy(
+addEventListener("mousemove", event => potato_ecc.key_utils.addEntropy(
   event.pageX, event.pageY, event.screenX, event.screenY
 ), { capture: false, passive: true })
 
 onload = () => {
   if (window.web3) {
-    eos_sale  = web3.eth.contract(EOS_SALE_ABI).at(EOS_SALE)
-    eos_token = web3.eth.contract(EOS_TOKEN_ABI).at(EOS_TOKEN)
+    potato_sale  = web3.eth.contract(POTATO_SALE_ABI).at(POTATO_SALE)
+    potato_token = web3.eth.contract(POTATO_TOKEN_ABI).at(POTATO_TOKEN)
 
     poll()
   } else {
@@ -82,12 +82,12 @@ let refresh = () => new Promise(resolve => async.parallel(Object.assign({
   dailyTotals: toAsync(getDailyTotals()),
 }, web3.eth.accounts[0] ? {
   eth_balance: $ => web3.eth.getBalance(web3.eth.accounts[0], $),
-  eos_balance: toAsync(balanceOf(EOS_TOKEN, web3.eth.accounts[0])),
+  potato_balance: toAsync(balanceOf(POTATO_TOKEN, web3.eth.accounts[0])),
   publicKey:   toAsync(getKey(web3.eth.accounts[0])),
   userBuys:    toAsync(getUserBuys(web3.eth.accounts[0])),
   userClaims:  toAsync(getUserClaims(web3.eth.accounts[0])),
 } : {}), hopefully(({
-  dailyTotals, eth_balance, eos_balance, publicKey, userBuys, userClaims,
+  dailyTotals, eth_balance, potato_balance, publicKey, userBuys, userClaims,
 }) => {
   let time = getTime()
 
@@ -130,34 +130,34 @@ let refresh = () => new Promise(resolve => async.parallel(Object.assign({
   }).reduce((a, x) => x.received.plus(a), web3.toBigNumber(0))
 
   resolve(update({
-    time, days, unclaimed, eth_balance, eos_balance, publicKey
+    time, days, unclaimed, eth_balance, potato_balance, publicKey
   }))
 })))
 
 let render = ({
-  time, days, unclaimed, eth_balance, eos_balance, publicKey, buyWindow,
+  time, days, unclaimed, eth_balance, potato_balance, publicKey, buyWindow,
 }) => <div>
   <p className="hidden" style={{ width: "95%" }}>
 
-    The EOS Token Distribution will take place over about 341 days.
-    1,000,000,000 (one billion) EOS tokens will be created at the
-    start of the sale, 100,000,000 EOS are allocated to block.one and cannot be
+    The POTATO Token Distribution will take place over about 341 days.
+    1,000,000,000 (one billion) POTATO tokens will be created at the
+    start of the sale, 100,000,000 POTATO are allocated to block.one and cannot be
     transfered.
 
-    The remaining 900,000,000 EOS will be split into different rolling windows of
-    availability.  The EOS tokens in a given window will be split
+    The remaining 900,000,000 POTATO will be split into different rolling windows of
+    availability.  The POTATO tokens in a given window will be split
     proportionally to all ETH contributions made during that window.
-    200,000,000 EOS will be sold in the first window, lasting five days.
+    200,000,000 POTATO will be sold in the first window, lasting five days.
     The remaining 700,000,000 will be divided equally into 350 windows, each
-    lasting 23 hours and distributing 2,000,000 EOS.  Contributions can be made to
-    any future window, but the EOS cannot be claimed until the window closes.
+    lasting 23 hours and distributing 2,000,000 POTATO.  Contributions can be made to
+    any future window, but the POTATO cannot be claimed until the window closes.
 
-    Once a window closes, the EOS tokens allocated to that window are
+    Once a window closes, the POTATO tokens allocated to that window are
     available to be claimed.
 
-    You must generate and register an EOS Public Key or it will not be possible for
-    anyone to include your EOS tokens in the genesis block of any future blockchain's
-    based on EOS.IO software.
+    You must generate and register an POTATO Public Key or it will not be possible for
+    anyone to include your POTATO tokens in the genesis block of any future blockchain's
+    based on POTATO.IO software.
 
     By sending ETH to this contract you agree to the Terms & Conditions and Purchase Agreement.
   </p>
@@ -180,12 +180,12 @@ let render = ({
 
   {web3.eth.accounts[0] ? <div>
     <div className="account pane">
-      <h2 style={{ textAlign: "center" }}>EOS Token Distribution</h2>
+      <h2 style={{ textAlign: "center" }}>POTATO Token Distribution</h2>
       <div className="info"><table><tbody>
         <tr>
           <th>Contract address</th>
           <td style={{ textAlign: "left" }}>
-            {EOS_SALE}
+            {POTATO_SALE}
           </td>
         </tr>
         <tr>
@@ -195,7 +195,7 @@ let render = ({
           </td>
         </tr>
         <tr>
-          <th>EOS public key</th>
+          <th>POTATO public key</th>
           <td style={{ textAlign: "left" }}>
             {publicKey ?
               <span>
@@ -203,7 +203,7 @@ let render = ({
               </span>
               :
               <span>
-                (no EOS key registered)
+                (no POTATO key registered)
              </span>
             }
           </td>
@@ -217,13 +217,13 @@ let render = ({
         <tr>
           <th></th>
           <td style={{ textAlign: "left" }}>
-            {formatEOS(unclaimed)} EOS (unclaimed)
+            {formatPOTATO(unclaimed)} POTATO (unclaimed)
           </td>
         </tr>
         <tr>
           <th></th>
           <td style={{ textAlign: "left" }}>
-            {formatEOS(eos_balance.div(WAD))} EOS
+            {formatPOTATO(potato_balance.div(WAD))} POTATO
           </td>
         </tr>
       </tbody></table></div>
@@ -232,13 +232,13 @@ let render = ({
           <div className="button">
             <a href="#" id="buy-link"
                onClick={event => (event.preventDefault(), showPane('buy'))}>
-              Get EOS tokens
+              Get POTATO tokens
             </a>
           </div>
           <div className="button" style={{ marginLeft: "1rem" }}>
             <a href="#" id="generate-link"
                onClick={event => (generate(), event.preventDefault())}>
-              { publicKey ? "Change your EOS key" : "Generate EOS key"}
+              { publicKey ? "Change your POTATO key" : "Generate POTATO key"}
             </a>
           </div>
         </div>
@@ -246,7 +246,7 @@ let render = ({
           <div className="button">
             <a href="#" id="transfer-link"
                onClick={event => (event.preventDefault(), showPane('transfer'))}>
-              Transfer EOS tokens
+              Transfer POTATO tokens
             </a>
           </div>
           <div className={ `button ${unclaimed.equals(0) ? 'disabled' : ''}` }
@@ -255,13 +255,13 @@ let render = ({
             { unclaimed.equals(0) &&
               <a href="#" id="claim-button" className="disabled"
                  onClick={event => event.preventDefault()}>
-                Claim EOS tokens
+                Claim POTATO tokens
               </a>
             }
             { !unclaimed.equals(0) &&
               <a href="#" id="claim-button"
                  onClick={event => (event.preventDefault(), claim())}>
-                Claim EOS tokens
+                Claim POTATO tokens
               </a>
             }
             <a href="#" id="claim-progress" className="disabled hidden"
@@ -278,9 +278,9 @@ let render = ({
         Generating key...
       </span>
       <div id="generate-confirm" className="hidden">
-        <h3>{publicKey ? "Change" : "Register"} EOS key</h3>
+        <h3>{publicKey ? "Change" : "Register"} POTATO key</h3>
 
-        {publicKey ? <p>This will replace your EOS claim key:
+        {publicKey ? <p>This will replace your POTATO claim key:
           <table>
             <tbody>
               <tr>
@@ -304,7 +304,7 @@ let render = ({
             <tr>
               <th>Description</th>
               <td style={{ textAlign: "left" }}>
-                EOS Token Distribution Claim Key
+                POTATO Token Distribution Claim Key
               </td>
             </tr>
             <tr>
@@ -339,7 +339,7 @@ let render = ({
         <p>
 
           There is no way to recover your private key.  You must save
-          it right now or you will be unable to access your EOS tokens
+          it right now or you will be unable to access your POTATO tokens
           when the sale ends.
 
         </p>
@@ -353,7 +353,7 @@ let render = ({
       </div>
     </form>
     <div className="hidden pane" id="register-pane">
-      <h3>{publicKey ? "Change" : "Register"} EOS public key</h3>
+      <h3>{publicKey ? "Change" : "Register"} POTATO public key</h3>
       <table>
         <tbody>
           <tr>
@@ -372,7 +372,7 @@ let render = ({
     </div>
     <form className="hidden pane" id="buy-pane"
           onSubmit={event => (event.preventDefault(), buy())}>
-      <h3>Get EOS tokens</h3>
+      <h3>Get POTATO tokens</h3>
       <table><tbody>
         <tr>
           <th>Distribution period</th>
@@ -392,9 +392,9 @@ let render = ({
           </td>
         </tr>
         <tr>
-          <th>EOS Distributed</th>
+          <th>POTATO Distributed</th>
           <td style={{ textAlign: "left" }}>
-            {formatEOS(days[buyWindow].createOnDay)} EOS
+            {formatPOTATO(days[buyWindow].createOnDay)} POTATO
           </td>
         </tr>
         <tr>
@@ -412,7 +412,7 @@ let render = ({
         <tr>
           <th>Effective price</th>
           <td style={{ textAlign: "left" }}>
-            {days[buyWindow].price.toFormat(9)} ETH/EOS
+            {days[buyWindow].price.toFormat(9)} ETH/POTATO
           </td>
         </tr>
         <tr>
@@ -435,7 +435,7 @@ let render = ({
     </form>
     <form className="hidden pane before-error" id="transfer-pane"
           onSubmit={event => (event.preventDefault(), transfer())}>
-      <h3>Transfer EOS tokens to another Ethereum account</h3>
+      <h3>Transfer POTATO tokens to another Ethereum account</h3>
       <table><tbody>
         <tr>
           <th>Recipient account</th>
@@ -450,14 +450,14 @@ let render = ({
         <tr>
           <th>Transfer amount</th>
           <td style={{ textAlign: "left" }}>
-            <input placeholder={formatEOS(eos_balance.div(WAD))}
+            <input placeholder={formatPOTATO(potato_balance.div(WAD))}
                    id="transfer-amount-input" required
                    type="text"
                    style={{ width: "15em" }}/>
-            {" EOS"}
+            {" POTATO"}
             <span style={{ marginLeft: "1rem" }}>
               <button id="transfer-button">
-                Transfer EOS tokens
+                Transfer POTATO tokens
               </button>
               <span id="transfer-progress" className="hidden">
                 Transferring tokens...
@@ -472,12 +472,12 @@ let render = ({
         <thead>
           <tr>
             <th>Period</th>
-            <th>EOS Distributed</th>
+            <th>POTATO Distributed</th>
             <th>Total ETH</th>
             <th>Effective price</th>
             <th>Closing</th>
             <th>Your ETH</th>
-            <th>Your EOS</th>
+            <th>Your POTATO</th>
           </tr>
         </thead>
         <tbody>
@@ -487,17 +487,17 @@ let render = ({
                 #{i}
                 {i == dayFor(time) ? "" : ""}
               </td>
-              <td>{formatEOS(day.createOnDay)} EOS</td>
+              <td>{formatPOTATO(day.createOnDay)} POTATO</td>
               <td>{formatETH(day.dailyTotal)} ETH</td>
               <td>{day.dailyTotal == 0 ? "n/a" : (
-                `${day.price.toFormat(9)} ETH/EOS`
+                `${day.price.toFormat(9)} ETH/POTATO`
               )}</td>
               <td>{day.ends.fromNow()}</td>
               <td>{formatETH(day.userBuys)} ETH</td>
               <td>
-                {formatEOS(day.received)} EOS
+                {formatPOTATO(day.received)} POTATO
                 {i >= dayFor(time)
-                  && <span title="Pending EOS subject to change if additional funds received" style={{ cursor: "pointer" }}> *</span>}
+                  && <span title="Pending POTATO subject to change if additional funds received" style={{ cursor: "pointer" }}> *</span>}
               </td>
             </tr>
           )}
@@ -521,7 +521,7 @@ function buy() {
   byId("buy-button").classList.add("hidden")
   byId("buy-progress").classList.remove("hidden")
   let amount = getValue("buy-input").replace(/,/g, "")
-  eos_sale.buyWithLimit(state.buyWindow, 0, {
+  potato_sale.buyWithLimit(state.buyWindow, 0, {
     value: web3.toWei(amount)
   }, hopefully(result =>
     ping(result).then(() => {
@@ -537,7 +537,7 @@ function claim() {
   byId("claim-button").classList.add("hidden")
   disable("claim-button")
   byId("claim-progress").classList.remove("hidden")
-  eos_sale.claimAll({
+  potato_sale.claimAll({
     gas: 2000000,
   }, hopefully(result => ping(result).then(() => {
     byId("claim-button").classList.remove("hidden")
@@ -552,7 +552,7 @@ function transfer() {
   let wad = web3.toBigNumber(
     getValue("transfer-amount-input").replace(/,/g, "")
   ).times(WAD)
-  eos_token.transfer(guy, wad, hopefully(result => ping(result).then(() => {
+  potato_token.transfer(guy, wad, hopefully(result => ping(result).then(() => {
     hidePanes()
     byId("transfer-button").classList.remove("hidden")
     byId("transfer-progress").classList.add("hidden")
@@ -576,7 +576,7 @@ function generate() {
 let privateKeyPair = null
 
 function genKeyPair() {
-  let {PrivateKey} = eos_ecc
+  let {PrivateKey} = potato_ecc
   let d = PrivateKey.randomKey()
   let privkey = d.toWif()
   let pubkey = d.toPublic().toString()
@@ -613,7 +613,7 @@ function generateCancel(e) {
 function register() {
   const key = privateKeyPair.pubkey
   show("register-progress")
-  eos_sale.register(key, {
+  potato_sale.register(key, {
     gas: 1000000,
   }, hopefully(result => ping(result).then(() => {
     hidePanes()
